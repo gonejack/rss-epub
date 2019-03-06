@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="app.js" type="NodeJSConfigurationType" nameIsGenerated="true" path-to-js-file="out/app/app.js" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="NODE_PATH" value="./out" />
+      <env name="LOG_LEVEL" value="info" />
+    </envs>
+    <method v="2">
+      <option name="TypeScript.Before.Run" enabled="true" FAIL_ON_ERROR="true" CONFIG_PATH="$PROJECT_DIR$/src/main/tsconfig.json" />
+    </method>
+  </configuration>
+</component>

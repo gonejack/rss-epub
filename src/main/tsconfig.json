@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "es2018",
+    "baseUrl": "./",
+    "outDir": "./../../out",
+    "sourceMap": true
+  }
+}

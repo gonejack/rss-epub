@@ -1,0 +1,26 @@
+const app = {
+    name: "rss-epub",
+    varDir: "./var/",
+    parserOption: {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
+        },
+    }
+};
+
+const books = {
+    博客: {
+        epub: './epub/{bookName}_{date}_{time}.epub',
+        cover: './conf/cover/{bookName}.jpg',
+        feeds: {
+            "月光博客": "https://www.williamlong.info/rss.xml",
+            "阮一峰的网络杂志": "http://www.ruanyifeng.com/blog/atom.xml",
+        }
+    }
+};
+
+module.exports = {
+    app,
+    books,
+};
