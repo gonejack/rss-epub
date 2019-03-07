@@ -53,10 +53,11 @@ class MainWorker implements Interface {
     private async loop(): Promise<void> {
         this.running = true;
 
+        await sleep(time.second * 3);
         while (this.keep) {
             await this.genBooks();
 
-            let sec = 15 * 60;
+            let sec = 24 * 60 * 60;
             while (sec-- > 0 && this.keep) {
                 await sleep(time.second);
             }
@@ -76,15 +77,16 @@ class MainWorker implements Interface {
             const info: {[key:string]: string} = {
                 bookName: bookName,
                 date: DateFormat(now, "yyyy-mm-dd"),
-                time: DateFormat(now, "HH:MM:ss"),
+                time: DateFormat(now, "HH-MM-ss"),
                 ts: String(now.getTime()),
             };
             const book = {
                 title: bookName,
                 author: 'rss-epub',
                 publisher: 'rss-epub',
+                lang: 'zh-CN',
                 cover: macroReplace(bookConf.cover, info),
-                tocTitle: "Index",
+                tocTitle: "Table Of Contents",
                 content: new Array<{
                     title: string,
                     author: string,
@@ -105,11 +107,9 @@ class MainWorker implements Interface {
                     if (feedTime.getTime() > lastTime.getTime()) {
                         feedTimes[feedName] = feedTime.toISOString();
 
-                        this.writeFeedTimes(feedTimes);
-
                         if (feed.items != null) {
                             for (const item of feed.items) {
-                                this.fixImageURL(feed, item);
+                                this.fixItem(feed, item);
 
                                 const pubDate = new Date(String(item.pubDate));
                                 const chapter = {
@@ -131,7 +131,8 @@ class MainWorker implements Interface {
                     else {
                         this.logger.info("[%s]未更新", feedName);
                     }
-                } catch (e) {
+                }
+                catch (e) {
                     this.logger.error("拉取失败[%s(%s)]: %s", feedName, feedURL, e);
                 }
             }
@@ -143,6 +144,8 @@ class MainWorker implements Interface {
                 try {
                     await (new Epub(book, epub).promise);
 
+                    this.saveFeedTimes(feedTimes);
+
                     this.logger.info("已完成[%s=>%s]", bookName, epub);
                 }
                 catch (e) {
@@ -151,11 +154,13 @@ class MainWorker implements Interface {
             }
         }
     }
-    private fixImageURL(feed: {}, item: {[key:string]:string}) {
+    private fixItem(feed: {}, item: {[key:string]:string}) {
+        if (item["content:encoded"]) {
+            item.content = item["content:encoded"];
+        }
+
         let linkInfo = parse(item.link);
-
         let website = `${linkInfo.protocol}//${linkInfo.host}`;
-
         item.content = item.content.replace(/src="(\/[^"]+?)"/g, (str, p1) => `src="${website}${p1}"`);
     }
     private readFeedTimes(): {[key: string]: any} {
@@ -178,7 +183,7 @@ class MainWorker implements Interface {
 
         return {};
     }
-    private writeFeedTimes(feedTimes: object) {
+    private saveFeedTimes(feedTimes: object) {
         const file = resolve(`${Conf.get('app.varDir')}/feedDates.json`);
 
         try {

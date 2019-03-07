@@ -13,9 +13,9 @@ class Conf {
     env(key:string, fallback:string): string {
         if (key in process.env) {
             console.log("环境变量[%s]读取[=%s]", key, process.env[key]);
-        } else {
+        }
+        else {
             process.env[key] = fallback;
-
             console.log("环境变量[%s]为空，缺省[=%s]", key, fallback);
         }
 
@@ -32,7 +32,8 @@ class Conf {
                 const prop = ps.shift();
                 if (prop && json.hasOwnProperty(prop)) {
                     json = json[prop];
-                } else {
+                }
+                else {
                     throw `找不到配置[${key}]`;
                 }
             }
