@@ -1,46 +1,50 @@
 import Conf from "app/conf";
 import * as fs from "fs"
+import * as path from "path";
+import * as DateFormat from 'dateformat'
 
 class Log {
-    static init():void {
+    static init(): void {
         if (process.env.LOG_TO_FILE && process.env.LOG_TO_FILE.toLowerCase() == 'true') {
-
             const conf = Conf.get('app.log');
 
-            Log.redirectStream('app', process.stdout, conf.app_log);
-            Log.redirectStream('err', process.stderr, conf.err_log);
+            Log.rewriteStream('app', process.stdout, conf.app_log);
+            Log.rewriteStream('err', process.stderr, conf.err_log);
         }
     }
 
-    static redirectStream(name:string, std:NodeJS.WritableStream, path:string) {
-        const origin = std.write;
-        const dateStr = require('libs/utils').toDateStr;
+    static rewriteStream(name: string, std: NodeJS.WritableStream, prefix: string) {
+        const stdWrite = std.write;
 
-        let today = dateStr(new Date());
         let stream: NodeJS.WritableStream | null;
+        std.write = (...args: any): boolean => {
+            if (!stream) {
+                const now = new Date();
+                const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 1, 0);
+                setTimeout(() => {
+                    if (stream) {
+                        stream.end()
+                    }
+                    stream = null;
+                }, end.getTime() - now.getTime());
 
-        std.write = function (...args:any) {
-            const nowDate = dateStr(new Date());
-
-            if (today !== nowDate) {
-                today = nowDate;
-                stream && stream.end();
-                stream = null;
-            }
-
-            if (stream == null) {
-                const file = `${path}${nowDate}.log`;
-                stream = fs.createWriteStream(file, {'flags': 'a'});
+                const target = path.resolve(`${prefix}${DateFormat(now, "yyyymmdd")}.log`);
+                if (!fs.existsSync(path.dirname(target))) {
+                    fs.mkdirSync(path.dirname(target), {recursive: true});
+                }
+                stream = fs.createWriteStream(target, {'flags': 'a'});
                 stream.on('error', e => {
-                    std.write = origin;
+                    std.write = stdWrite;
                     console.log("Log file[%s] stream error", e)
                 });
             }
 
-            stream.write.apply(stream, args);
+            if (stream) {
+                stream.write.apply(stream, args);
+            }
 
             return true;
-        }
+        };
     }
 }
 

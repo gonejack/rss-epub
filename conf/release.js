@@ -6,6 +6,10 @@ const app = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
         },
+    },
+    log: {
+        app_log: "./log/app_",
+        err_log: "./log/err_",
     }
 };
 
