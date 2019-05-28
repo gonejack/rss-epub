@@ -2,11 +2,16 @@
   "dependencies": {
     "dateformat": "^3.0.3",
     "epub-gen": "^0.1.0",
-    "rss-parser": "latest",
-    "replaceall": "latest"
+    "replaceall": "latest",
+    "rss-parser": "latest"
   },
   "devDependencies": {
+    "@types/xml2js": "^0.4.4",
     "@types/node": "^12.0.2",
     "@types/dateformat": "^3.0.0"
+  },
+  "scripts": {
+    "build": "tsc --build src/main/tsconfig.json",
+    "start": "env NODE_PATH=out LOG_LEVEL=info node out/app/app.js"
   }
 }
