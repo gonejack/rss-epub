@@ -12,5 +12,5 @@ npm i
 build & run
 ```shell
 npm run build
-npm run start
+npm start
 ```

@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  "12"
+before_install:
+  - npm i -g typescript
+install:
+  - npm i
+script:
+  - npm run build
