@@ -1,5 +1,5 @@
 import {Interface} from "./interface";
-import {LoggerInterface, newLogger} from "libs/logger";
+import {Ilogger, newLogger} from "libs/logger";
 import {sleep, time} from "libs/time";
 import * as Parser from 'rss-parser'
 import * as DateFormat from 'dateformat'
@@ -12,7 +12,7 @@ import {dirname, resolve} from 'path';
 class MainWorker implements Interface {
     private keep: boolean;
     private running: boolean;
-    private readonly logger: LoggerInterface = newLogger("MainWorker");
+    private readonly logger: Ilogger = newLogger("MainWorker");
     private readonly books: {
         [key: string]: {
             epub: string,

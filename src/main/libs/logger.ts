@@ -1,4 +1,4 @@
-export interface LoggerInterface {
+export interface Ilogger {
     debug(tpl: string, ...args: any): void;
 
     info(tpl: string, ...args: any): void;
@@ -21,7 +21,7 @@ export enum LEVEL {
     PROMPT,
 }
 
-export class BaseLogger implements LoggerInterface {
+export class BaseLogger implements Ilogger {
     private readonly component: string;
     private readonly pattern: string;
     private readonly threadHold: LEVEL;
@@ -116,6 +116,6 @@ export class BaseLogger implements LoggerInterface {
     }
 }
 
-export function newLogger(name: string): LoggerInterface {
+export function newLogger(name: string): Ilogger {
     return new BaseLogger(name);
 }

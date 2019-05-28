@@ -5,8 +5,9 @@ import mainWorker from "modules/worker/mainWorker";
 class App {
     private logger = newLogger("App");
 
-    constructor() {
+    public static main(): void {
         Log.init();
+        new App().start();
     }
 
     async start(): Promise<any> {
@@ -28,10 +29,6 @@ class App {
         await mainWorker.stop();
 
         this.logger.prompt("关闭完成");
-    }
-
-    public static main(): void {
-        new App().start();
     }
 }
 

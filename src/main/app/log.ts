@@ -21,22 +21,15 @@ class Log {
             if (!stream) {
                 const now = new Date();
                 const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 1, 0);
-                setTimeout(() => {
-                    if (stream) {
-                        stream.end()
-                    }
-                    stream = null;
-                }, end.getTime() - now.getTime());
+                setTimeout(() => stream && stream.end(), end.getTime() - now.getTime());
 
                 const target = path.resolve(`${prefix}${DateFormat(now, "yyyymmdd")}.log`);
                 if (!fs.existsSync(path.dirname(target))) {
                     fs.mkdirSync(path.dirname(target), {recursive: true});
                 }
+
                 stream = fs.createWriteStream(target, {'flags': 'a'});
-                stream.on('error', e => {
-                    std.write = stdWrite;
-                    console.log("Log file[%s] stream error", e)
-                });
+                stream.on('error', e => { std.write = stdWrite; console.error("Log stream[%s] error", target, e)});
             }
 
             if (stream) {

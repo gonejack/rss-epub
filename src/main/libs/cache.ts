@@ -2,7 +2,7 @@ import * as Logger from "libs/logger"
 
 class Cache {
     private readonly name: string;
-    private readonly logger: Logger.LoggerInterface;
+    private readonly logger: Logger.Ilogger;
     private readonly data: { [key: string]: any };
     private readonly data_ts: { [key: string]: any };
     private readonly item_ttl: number;
