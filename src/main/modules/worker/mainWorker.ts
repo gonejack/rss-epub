@@ -27,15 +27,22 @@ class MainWorker implements Interface {
         this.running = false;
         this.keep = false;
         this.books = Conf.get("books");
+
+        this.start = this.start.bind(this);
+        this.stop = this.stop.bind(this);
     }
 
     async start(): Promise<boolean> {
-        this.keep = true;
-
-        this.loop().then(() => this.running = false);
+        (async () => {
+            this.keep = true;
+            this.running = true;
+            await this.loop();
+            this.running = false;
+        })();
 
         return true;
     }
+
     async stop(): Promise<boolean> {
         this.keep = false;
 
@@ -51,8 +58,6 @@ class MainWorker implements Interface {
     }
 
     private async loop(): Promise<void> {
-        this.running = true;
-
         await sleep(time.second * 3);
         while (this.keep) {
             await this.genBooks();
@@ -62,9 +67,8 @@ class MainWorker implements Interface {
                 await sleep(time.second);
             }
         }
-
-        this.running = false;
     }
+
     private async genBooks(): Promise<any> {
         const feedTimes = this.readFeedTimes();
         const parser = new Parser(Conf.get('app.parserOption'));
@@ -74,20 +78,20 @@ class MainWorker implements Interface {
 
             const bookConf = this.books[bookName];
             const now = new Date();
-            const info: {[key:string]: string} = {
+            const info: { [key: string]: string } = {
                 bookName: bookName,
-                date: DateFormat(now, "yyyy-mm-dd"),
-                time: DateFormat(now, "HH-MM-ss"),
-                ts: String(now.getTime()),
+                date    : DateFormat(now, "yyyy-mm-dd"),
+                time    : DateFormat(now, "HH-MM-ss"),
+                ts      : String(now.getTime()),
             };
             const book = {
-                title: bookName,
-                author: 'rss-epub',
+                title    : bookName,
+                author   : 'rss-epub',
                 publisher: 'rss-epub',
-                lang: 'zh-CN',
-                cover: macroReplace(bookConf.cover, info),
-                tocTitle: "Table Of Contents",
-                content: new Array<{
+                lang     : 'zh-CN',
+                cover    : macroReplace(bookConf.cover, info),
+                tocTitle : "Table Of Contents",
+                content  : new Array<{
                     title: string,
                     author: string,
                     data: string,
@@ -113,9 +117,9 @@ class MainWorker implements Interface {
 
                                 const pubDate = new Date(String(item.pubDate));
                                 const chapter = {
-                                    title: String(item.title),
+                                    title : String(item.title),
                                     author: String(item.author || item.creator),
-                                    data: `${item.content}
+                                    data  : `${item.content}
                                     <br/>
                                     <div>
                                         <p>From: ${feed.title}</p>
@@ -127,12 +131,10 @@ class MainWorker implements Interface {
                                 book.content.push(chapter);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         this.logger.info("[%s]未更新", feedName);
                     }
-                }
-                catch (e) {
+                } catch (e) {
                     this.logger.error("拉取失败[%s(%s)]: %s", feedName, feedURL, e);
                 }
             }
@@ -147,14 +149,14 @@ class MainWorker implements Interface {
                     this.saveFeedTimes(feedTimes);
 
                     this.logger.info("已完成[%s=>%s]", bookName, epub);
-                }
-                catch (e) {
+                } catch (e) {
                     this.logger.error("生成[%s]出错: %s", epub, e);
                 }
             }
         }
     }
-    private fixItem(feed: {}, item: {[key:string]:string}) {
+
+    private fixItem(feed: {}, item: { [key: string]: string }) {
         if (item["content:encoded"]) {
             item.content = item["content:encoded"];
         }
@@ -163,7 +165,8 @@ class MainWorker implements Interface {
         let website = `${linkInfo.protocol}//${linkInfo.host}`;
         item.content = item.content.replace(/src="(\/[^"]+?)"/g, (str, p1) => `src="${website}${p1}"`);
     }
-    private readFeedTimes(): {[key: string]: any} {
+
+    private readFeedTimes(): { [key: string]: any } {
         const file = resolve(`${Conf.get('app.varDir')}/feedDates.json`);
 
         try {
@@ -176,13 +179,13 @@ class MainWorker implements Interface {
                     return JSON.parse(content);
                 }
             }
-        }
-        catch (e) {
+        } catch (e) {
             this.logger.warn("读取日期记录文件出错: %s", file, e);
         }
 
         return {};
     }
+
     private saveFeedTimes(feedTimes: object) {
         const file = resolve(`${Conf.get('app.varDir')}/feedDates.json`);
 
@@ -191,8 +194,7 @@ class MainWorker implements Interface {
 
             fs.mkdirSync(dirname(file), {recursive: true});
             fs.writeFileSync(file, JSON.stringify(feedTimes, null, 4));
-        }
-        catch (e) {
+        } catch (e) {
             this.logger.error("更新日期记录文件出错: %s", file, e);
 
             return {};

@@ -1,19 +1,19 @@
-import Log from "app/log"
 import {newLogger} from "libs/logger";
-import mainWorker from "modules/worker/mainWorker";
 
 class App {
     private logger = newLogger("App");
+    private starts: Array<(() => Promise<boolean>)> = [];
+    private stops: Array<(() => Promise<boolean>)> = [];
 
-    public static main(): void {
-        Log.init();
-        new App().start();
-    }
-
-    async start(): Promise<any> {
+    public async start(): Promise<any> {
         this.logger.prompt("开始启动");
 
-        await mainWorker.start();
+        for (let start of this.starts) {
+            let ok = await start();
+            if (!ok) {
+                this.logger.fatal("启动失败");
+            }
+        }
 
         process.on('SIGTERM', this.stop.bind(this));
         process.on('SIGINT', this.stop.bind(this));
@@ -22,14 +22,24 @@ class App {
 
         return true;
     }
-
-    async stop(): Promise<void> {
+    public async stop(): Promise<void> {
         this.logger.prompt("开始关闭");
 
-        await mainWorker.stop();
+        for (let stop of this.stops) {
+            let ok = await stop();
+            if (!ok) {
+                this.logger.error("关闭失败");
+            }
+        }
 
         this.logger.prompt("关闭完成");
     }
+    public onStart(...starts: [() => Promise<boolean>]) {
+        this.starts = starts;
+    }
+    public onStop(...stops: [() => Promise<boolean>]) {
+        this.stops = stops;
+    }
 }
 
-App.main();
+export default App;

@@ -1,14 +1,9 @@
 export interface Ilogger {
     debug(tpl: string, ...args: any): void;
-
     info(tpl: string, ...args: any): void;
-
     warn(tpl: string, ...args: any): void;
-
     error(tpl: string, ...args: any): void;
-
     fatal(tpl: string, ...args: any): void;
-
     prompt(tpl: string, ...args: any): void;
 }
 
@@ -43,7 +38,7 @@ export class BaseLogger implements Ilogger {
         }
     }
 
-    format(level:LEVEL, msg:string): string {
+    format(level: LEVEL, msg: string): string {
         let text = this.pattern;
 
         text = text.replace(/{[A-Z]+?}/g, (str) => {
@@ -98,7 +93,7 @@ export class BaseLogger implements Ilogger {
         this.log(LEVEL.PROMPT, tpl, ...args);
     }
 
-    static getTime(format:string, date:Date):string {
+    static getTime(format: string, date: Date): string {
         const year = date.getFullYear();
         const mon = '0' + (date.getMonth() + 1);
         const day = '0' + date.getDate();

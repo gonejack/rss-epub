@@ -12,6 +12,6 @@
   },
   "scripts": {
     "build": "tsc --build src/main/tsconfig.json",
-    "start": "env NODE_PATH=out LOG_LEVEL=info node out/app/app.js"
+    "start": "env NODE_PATH=out LOG_LEVEL=info node out/index.js"
   }
 }

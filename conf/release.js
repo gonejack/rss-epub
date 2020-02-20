@@ -18,7 +18,7 @@ const books = {
         epub: './epub/博客_{date}_{time}.epub',
         cover: './conf/cover/博客.jpg',
         feeds: {
-            // "月光博客": "https://www.williamlong.info/rss.xml",
+            "月光博客": "https://www.williamlong.info/rss.xml",
             "阮一峰的网络杂志": "http://www.ruanyifeng.com/blog/atom.xml",
         }
     },
