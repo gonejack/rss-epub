@@ -1,4 +1,4 @@
-import {Interface} from "./interface";
+import {Service} from "./interface";
 import {Ilogger, newLogger} from "libs/logger";
 import {sleep, time} from "libs/time";
 import * as Parser from 'rss-parser'
@@ -9,10 +9,10 @@ import {parse} from 'url';
 import * as fs from 'fs';
 import {dirname, resolve} from 'path';
 
-class MainWorker implements Interface {
+class EpubService implements Service {
     private keep: boolean;
     private running: boolean;
-    private readonly logger: Ilogger = newLogger("MainWorker");
+    private readonly logger: Ilogger = newLogger("EpubService");
     private readonly books: {
         [key: string]: {
             epub: string,
@@ -202,4 +202,4 @@ class MainWorker implements Interface {
     }
 }
 
-export default new MainWorker();
+export default new EpubService();

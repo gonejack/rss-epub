@@ -1,83 +1,66 @@
 class Queue<T> {
     private readonly capacity: number;
+    private producers: (() => boolean)[];
+    private consumers: ((value: T | any) => ({ value: T | any, suc: boolean }))[];
+    private values: Array<T | any>;
     private closed = false;
-    private valuesQueue: Array<T> = new Array<T>();
-    private pendingPushQueue: ((ret:number) => void)[];
-    private pendingPullQueue: ((ret:T) => void)[];
 
-    constructor(cap?: number) {
+    constructor(cap ?: number) {
         if (cap == null) {
             cap = 0;
         }
-
         this.capacity = cap;
-        this.pendingPushQueue = new Array<(ret:any) => void>();
-        this.pendingPullQueue = new Array<(ret:any) => void>();
+        this.producers = new Array<() => boolean>();
+        this.consumers = new Array<(value: T | any) => ({ value: T | any, suc: boolean })>();
+        this.values = new Array<T | any>();
     }
 
-    async push(item: any): Promise<boolean> {
+    async push(value: T): Promise<boolean> {
         if (this.closed) {
             return false;
         }
-        else {
-            if (this.pendingPullQueue.length) {
-                // @ts-ignore
-                this.pendingPullQueue.shift()({value: item, suc: true});
-            }
-            else {
-                this.valuesQueue.push(item);
-            }
 
-            if (this.valuesQueue.length > this.capacity) {
-                // @ts-ignore
-                return new Promise((res:() => void) => this.pendingPushQueue.push(res));
+        this.values.push(value);
+
+        if (this.consumers.length > 0) {
+            const consumer = this.consumers.shift();
+            const value = this.values.shift();
+            if (consumer != null && value != null) {
+                consumer(value);
             }
-            else {
-                return true;
-            }
+        }
+
+        if (this.values.length <= this.capacity) {
+            return true;
+        } else {
+            const resolve = () => true;
+            this.producers.push(resolve);
+            return new Promise<boolean>(resolve);
         }
     }
-
-    async pull(): Promise<{value: T|any, suc:boolean}> {
-        if (this.valuesQueue.length) {
-            const value = this.valuesQueue.shift();
-
-            if (this.pendingPushQueue.length) {
-                // @ts-ignore
-                this.pendingPushQueue.shift()(true);
-            }
-
-            // @ts-ignore
-            return {value: value, suc: true};
-        }
-        else {
-            if (this.closed) {
-                return {value: undefined, suc: false};
-            }
-            else {
-                // @ts-ignore
-                return new Promise((res:() => void) => this.pendingPullQueue.push(res));
-            }
+    async pull(): Promise<{ value: T | any, suc: boolean }> {
+        switch (true) {
+            case this.values.length > 0:
+                if (this.producers.length > 0) {
+                    let producer = this.producers.shift();
+                    if (producer != null) {
+                        producer();
+                    }
+                }
+                return {value: this.values.shift(), suc: true};
+            case this.closed:
+                return {value: null, suc: false};
+            default:
+                const resolve = (value: T | any) => ({value: value, suc: true});
+                this.consumers.push(resolve);
+                return new Promise<{ value: T | any, suc: boolean }>(resolve);
         }
     }
-
-    async close():Promise<void> {
+    close() {
         this.closed = true;
-
-        while (this.pendingPullQueue.length) {
-            if (this.valuesQueue.length) {
-                // @ts-ignore
-                process.nextTick(() => this.pendingPullQueue.shift()({value: this.valuesQueue.shift(), suc: true}))
-            }
-            else {
-                // @ts-ignore
-                this.pendingPullQueue.shift()({value: undefined, suc: false});
-            }
-        }
     }
-
-    size():number {
-        return this.valuesQueue.length - this.pendingPushQueue.length
+    size(): number {
+        return this.values.length;
     }
 }
 

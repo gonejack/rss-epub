@@ -1,21 +1,20 @@
 import App from "./app/app";
 import Log from "./app/log"
-import mainWorker from "./modules/worker/mainWorker";
+import epubService from "./service/epubService";
 
 class Main {
     public static main(): void {
         Log.init();
 
-        let app = new App();
+        const app = new App();
 
         app.onStart(
-            mainWorker.start,
+            epubService.start,
         );
         app.onStop(
-            mainWorker.stop,
+            epubService.stop,
         );
-
-        app.start();
+        app.boot();
     }
 }
 

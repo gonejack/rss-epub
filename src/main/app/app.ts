@@ -5,7 +5,7 @@ class App {
     private starts: Array<(() => Promise<boolean>)> = [];
     private stops: Array<(() => Promise<boolean>)> = [];
 
-    public async start(): Promise<any> {
+    public async boot(): Promise<any> {
         this.logger.prompt("开始启动");
 
         for (let start of this.starts) {
@@ -22,6 +22,7 @@ class App {
 
         return true;
     }
+
     public async stop(): Promise<void> {
         this.logger.prompt("开始关闭");
 
@@ -34,11 +35,17 @@ class App {
 
         this.logger.prompt("关闭完成");
     }
-    public onStart(...starts: [() => Promise<boolean>]) {
-        this.starts = starts;
+
+    public onStart(...starts: Array<() => Promise<boolean>>): App {
+        this.starts.push(...starts);
+
+        return this;
     }
-    public onStop(...stops: [() => Promise<boolean>]) {
-        this.stops = stops;
+
+    public onStop(...stops: Array<() => Promise<boolean>>): App {
+        this.stops.push(...stops);
+
+        return this;
     }
 }
 
