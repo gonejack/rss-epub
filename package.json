@@ -13,5 +13,24 @@
   "scripts": {
     "build": "tsc --build src/main/tsconfig.json",
     "start": "env NODE_PATH=out LOG_LEVEL=info node out/index.js"
-  }
+  },
+  "name": "rss-epub",
+  "description": "Archive RSS feeds to epub books.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gonejack/rss-epub.git"
+  },
+  "keywords": [
+    "rss",
+    "feed",
+    "epub"
+  ],
+  "author": "gonejack",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gonejack/rss-epub/issues"
+  },
+  "homepage": "https://github.com/gonejack/rss-epub#readme"
 }

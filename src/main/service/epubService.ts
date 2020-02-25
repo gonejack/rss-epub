@@ -27,12 +27,9 @@ class EpubService implements Service {
         this.running = false;
         this.keep = false;
         this.books = Conf.get("books");
-
-        this.start = this.start.bind(this);
-        this.stop = this.stop.bind(this);
     }
 
-    async start(): Promise<boolean> {
+    public start = async (): Promise<boolean> => {
         (async () => {
             this.keep = true;
             this.running = true;
@@ -41,9 +38,8 @@ class EpubService implements Service {
         })();
 
         return true;
-    }
-
-    async stop(): Promise<boolean> {
+    };
+    public stop = async (): Promise<boolean> => {
         this.keep = false;
 
         while (this.running) {
@@ -55,7 +51,7 @@ class EpubService implements Service {
         }
 
         return true;
-    }
+    };
 
     private async loop(): Promise<void> {
         await sleep(time.second * 3);
