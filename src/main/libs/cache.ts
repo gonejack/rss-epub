@@ -1,6 +1,6 @@
 import * as Logger from "libs/logger"
 
-class Cache {
+export class Cache {
     private readonly name: string;
     private readonly logger: Logger.Ilogger;
     private readonly data: { [key: string]: any };
@@ -16,6 +16,7 @@ class Cache {
 
         setInterval(this.flush.bind(this), clean_interval * 1e3);
     }
+
     public get(key: string): any {
         this.logger.debug("读取缓存[key=%s]: %s", key, this.data[key]);
 
@@ -23,12 +24,14 @@ class Cache {
 
         return this.data[key];
     }
+
     public set(key: string, data: any) {
         this.logger.debug("写缓存[key=%s]", key, data);
 
         this.data[key] = data;
         this.data_ts[key] = Date.now();
     }
+
     public flush() {
         let now = Date.now();
 
@@ -42,5 +45,3 @@ class Cache {
         }
     }
 }
-
-export default Cache;

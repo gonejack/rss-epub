@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="index.js" type="NodeJSConfigurationType" path-to-node="$USER_HOME$/.config/nvm/12.5.0/bin/node" nameIsGenerated="true" path-to-js-file="out/index.js" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="index.js" type="NodeJSConfigurationType" path-to-node="$USER_HOME$/.nvm/current/bin/node" nameIsGenerated="true" path-to-js-file="out/index.js" working-dir="$PROJECT_DIR$">
     <envs>
       <env name="NODE_PATH" value="./out" />
       <env name="LOG_LEVEL" value="info" />
