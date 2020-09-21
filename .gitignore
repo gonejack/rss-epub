@@ -1,6 +1,8 @@
 .DS_Store
-epub/
+*.iml
+.idea/
 node_modules/
+epub/
 out/
 var/
-*.iml
+

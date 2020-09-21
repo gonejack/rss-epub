@@ -3,11 +3,11 @@
     "dateformat": "^3.0.3",
     "epub-gen": "^0.1.0",
     "replaceall": "latest",
-    "rss-parser": "^3.8.0"
+    "rss-parser": "^3.9.0"
   },
   "devDependencies": {
     "@types/dateformat": "^3.0.1",
-    "@types/node": "^12.12.47",
+    "@types/node": "^12.12.62",
     "@types/xml2js": "^0.4.5"
   },
   "scripts": {
